@@ -11,7 +11,7 @@
     "path": "audiogroups/audiogroup_default",
   },
   "soundFile": "sndThrow.wav",
-  "duration": 0.367721,
+  "duration": 0.362721,
   "parent": {
     "name": "GAME",
     "path": "folders/GAME.yy",

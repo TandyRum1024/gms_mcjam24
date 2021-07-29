@@ -3,15 +3,48 @@
 
 if (generateRequest > 0)
 {
+	global.mouseLock = false;
 	generateRequest--;
 }
 else if (generateRequest == 0)
 {
-	global.mapSize = [64, 64, 32];
+	//global.mapSize = [64, 64, 32];
+	global.mapSize = [irandom_range(32, 128), irandom_range(32, 128), irandom_range(24, 48)];
 	
+	// Generate done
 	map_generate(global.mapSize[0], global.mapSize[1], global.mapSize[2]);
-	map_update_chunks_updated();
+	
+	// to next progress
 	generateRequest = -1;
+	// generateMeshProgress = 0;
+	generateMeshInit = false;
+	map_update_chunks_updated_gradually_prep();
+	// Clear the previous VBs
+	map_destroy();
+}
+else if (generateRequest == -1)
+{
+	// Build VB
+	// map_update_chunks_updated();
+	generateMeshAllocatedTime = generateMeshAllocatedTimeFirstGen;
+	map_update_chunks_updated_gradually();
+	
+	// Hold player in place
+	with (player)
+	{
+		x = (global.mapSize[0] >> 1) << TILE_BIT;
+		y = (global.mapSize[1] >> 1) << TILE_BIT;
+		z = (global.mapSize[2] + 3) << TILE_BIT;
+	}
+	
+	// Done
+	if (generateMeshDone)
+	{
+		show_debug_message("ALL CHUNKS MESHGEN DONE");
+		global.mouseLock = true;
+		generateMeshAllocatedTime = generateMeshAllocatedTimeNormal;
+		generateRequest = -2;
+	}
 }
 
 // Map regen button
@@ -75,7 +108,7 @@ with (camera)
 	}
 	
 	audio_listener_position(x, y, z);
-	audio_listener_orientation(x+fwdX, y+fwdY, z+fwdZ, 0, 0, 1);
+	audio_listener_orientation(x-fwdX, y-fwdY, z+fwdZ, 0, 0, 1);
 	audio_falloff_set_model(audio_falloff_exponent_distance);
 }
 with (oPlayer)
@@ -105,6 +138,15 @@ with (camera)
 	update();
 }*/
 #endregion
+
+if (generateRequest == -2)
+{
+	// Build all the updated chunks VBs gradually
+	if (!generateMeshInit)
+		map_update_chunks_updated_gradually_prep();
+	if (!generateMeshDone)
+		map_update_chunks_updated_gradually();
+}
 
 #region Debug UI
 if (global.debugUI)

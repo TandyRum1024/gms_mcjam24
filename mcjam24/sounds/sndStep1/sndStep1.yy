@@ -1,6 +1,6 @@
 {
   "compression": 0,
-  "volume": 1.0,
+  "volume": 0.5,
   "preload": false,
   "bitRate": 128,
   "sampleRate": 44100,
@@ -11,7 +11,7 @@
     "path": "audiogroups/audiogroup_default",
   },
   "soundFile": "sndStep1.wav",
-  "duration": 0.02305,
+  "duration": 0.056508,
   "parent": {
     "name": "GAME",
     "path": "folders/GAME.yy",

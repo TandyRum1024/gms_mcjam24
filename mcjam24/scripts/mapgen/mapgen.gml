@@ -1,6 +1,7 @@
 // Global definitions
 global.mapHeightmap = undefined;
 global.mapTiles = [];
+global.mapTilesLayer = [];
 global.mapChunksVB = [];
 
 function map_debug_onstep () 
@@ -15,6 +16,7 @@ function map_generate (_sx, _sy, _sz, _heightmap_shader, _seed)
 	var _chunk_sx = ceil(_sx / MAP_CHUNK_SZ),
 		_chunk_sy = ceil(_sy / MAP_CHUNK_SZ),
 		_chunk_sz = ceil(_sz / MAP_CHUNK_SZ),
+		_tiledef = global.defTiles,
 		;
 	
 	if (_heightmap_shader == undefined)
@@ -46,8 +48,11 @@ function map_generate (_sx, _sy, _sz, _heightmap_shader, _seed)
 	buffer_get_surface(_buff, _surf, 0);
 	
 	// Clear tiles
-	var _tilemap = [];
+	var _tilemap = [],
+		_tilelayer = [],
+		;
 	global.mapTiles = _tilemap;
+	global.mapTilesLayer = _tilelayer;
 	for (var xx=0; xx<_sx; xx++)
 	{
 		for (var yy=0; yy<_sy; yy++)
@@ -55,6 +60,7 @@ function map_generate (_sx, _sy, _sz, _heightmap_shader, _seed)
 			for (var zz=0; zz<_sz; zz++)
 			{
 				_tilemap[xx][yy][zz] = 0;
+				_tilelayer[xx][yy][zz] = eLAYER.NONE;
 			}
 		}
 	}
@@ -82,6 +88,10 @@ function map_generate (_sx, _sy, _sz, _heightmap_shader, _seed)
 			HEIGHT_SAND = 5,
 			HEIGHT_LAVA = 4
 	
+	var _map_type = choose(0,0,0, 1, 2),
+		_max_height = irandom_range(8, _sz),
+		;
+	
 	for (var xx=0; xx<_sx; xx++)
 	{
 		for (var yy=0; yy<_sy; yy++)
@@ -93,7 +103,21 @@ function map_generate (_sx, _sy, _sz, _heightmap_shader, _seed)
 			var _HEIGHT_DIRT = floor(max(7 - power(_map_r, 3.0) * 8, 0));
 			
 			// "Stack" the tiles according to its height
-			var _height = round(_map_r * _sz);
+			//var _height = round(_map_r * _sz);
+			var _height;
+			switch (_map_type)
+			{
+				default:
+				case 0: // normal
+					_height = round(_map_r * _max_height);
+					break;
+				case 1: // spiky
+					_height = round(_map_r * random_range(8, _sz));
+					break;
+				case 2: // flat
+					_height = round(min(_map_r * _sz, _max_height));
+					break;
+			}
 			for (var zz=0; zz<=_height; zz++)
 			{
 				var _type = eTILES.STONE;
@@ -109,6 +133,7 @@ function map_generate (_sx, _sy, _sz, _heightmap_shader, _seed)
 						_type = eTILES.DIRT; // dirt
 				}
 				_tilemap[xx][yy][zz] = _type;
+				_tilelayer[xx][yy][zz] = _tiledef[_type].layer;
 				
 				// update chunk updated flag
 				_chunk_updated[xx >> MAP_CHUNK_BIT][yy >> MAP_CHUNK_BIT][zz >> MAP_CHUNK_BIT] = true;
@@ -118,6 +143,7 @@ function map_generate (_sx, _sy, _sz, _heightmap_shader, _seed)
 			for (var zz=_height+1; zz<=HEIGHT_LAVA; zz++)
 			{
 				_tilemap[xx][yy][zz] = eTILES.LAVA;
+				_tilelayer[xx][yy][zz] = _tiledef[eTILES.LAVA].layer;
 				
 				// update chunk updated flag
 				_chunk_updated[xx >> MAP_CHUNK_BIT][yy >> MAP_CHUNK_BIT][zz >> MAP_CHUNK_BIT] = true;
@@ -129,8 +155,8 @@ function map_generate (_sx, _sy, _sz, _heightmap_shader, _seed)
 	instance_destroy(oGuy);
 	repeat (irandom_range(4, 8))
 	{
-		var _cx = ((_sx >> 1) << TILE_BIT) + random_range(-64, 64),
-			_cy = ((_sy >> 1) << TILE_BIT) + random_range(-64, 64),
+		var _cx = ((_sx >> 1) << TILE_BIT) + random_range(-128, 128),
+			_cy = ((_sy >> 1) << TILE_BIT) + random_range(-128, 128),
 		;
 		with (instance_create_layer(_cx, _cy, "inst", oGuy))
 		{

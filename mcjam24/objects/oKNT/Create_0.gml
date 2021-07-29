@@ -2,11 +2,32 @@
 global.debugUI = false;
 global.debugPhysics = false;
 
-global.mouseLock = false;
+global.mouseLock = true;
 global.mouseSensitivity = 0.1;
 global.gamePaused = false;
 
+// Realtime progress update
 generateRequest = 1;
+generateMeshProgress = 0;
+generateMeshAllocatedTime = 100; // 100 ms
+generateMeshAllocatedTimeNormal = 25;
+generateMeshAllocatedTimeFirstGen = 256;
+generateMeshBeginTime = 0;
+
+generateMeshChunkBeginTime = 0;
+generateMeshChunkVBs = [undefined, undefined]; // list of VBs (one for each render layers)
+generateMeshChunkX = 0;
+generateMeshChunkY = 0;
+generateMeshChunkZ = 0;
+generateMeshBlockX = 0; // if generateMeshBlockX == -1 then it means we must move onto the next chunk
+generateMeshBlockY = 0;
+generateMeshBlockZ = 0;
+generateMeshBlockBaseX = 0;
+generateMeshBlockBaseY = 0;
+generateMeshBlockBaseZ = 0;
+
+generateMeshDone = false;
+generateMeshInit = false;
 
 // Prepare the tiles
 function tex_add_spr (_name, _spr)
@@ -57,6 +78,14 @@ camera = {
 	x: 0,
 	y: 0,
 	z: 0,
+	
+	ox: 0,
+	oy: 0,
+	oz: 0,
+	vx: 0,
+	vy: 0,
+	vz: 0,
+	
 	rotH: 0,
 	rotV: 0,
 	
@@ -74,6 +103,8 @@ camera = {
 	znear: 0.1,
 	zfar: 4096,
 	
+	shake: 0,
+	
 	matV: undefined,
 	matP: undefined,
 	
@@ -89,7 +120,20 @@ camera = {
 		sideY = fwdAimX;
 		sideZ = 0;
 		
-		matV = matrix_build_lookat(x, y, z, x+fwdX, y+fwdY, z+fwdZ, 0, 0, -1);
+		shake *= 0.8;
+		
+		vx += -ox * 0.25;
+		vy += -oy * 0.25;
+		vz += -oz * 0.25;
+		ox += vx;
+		oy += vy;
+		oz += vz;
+		vx *= 0.9;
+		vy *= 0.9;
+		vz *= 0.9;
+		
+		matV = matrix_build_lookat(x + ox + random_range(-shake, shake), y + oy + random_range(-shake, shake), z + oz + random_range(-shake, shake),
+									x+fwdX, y+fwdY, z+fwdZ, 0, 0, -1);
 		matP = matrix_build_projection_perspective_fov(fov, window_get_width()/window_get_height(), znear, zfar);
 	}
 };

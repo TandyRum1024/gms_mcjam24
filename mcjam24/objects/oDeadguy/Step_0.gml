@@ -30,12 +30,22 @@ if (life & 1)
 	}
 }
 
+
+audio_emitter_position(emitter, x, y, z);
+
+
 if (z < -64)
 	instance_destroy(id);
 
 // Check for collision
+if (life > room_speed * 1)
+{
+	die();
+}
 if (map_col_aabb(x-sx, y-sy, z-sz, x+sx, y+sy, z+sz))
 {
+	die();
+	/*
 	snd_play_at(sndDed, random_range(0.9, 1.1), 1.0, x, y, z);
 	
 	repeat (irandom_range(16, 32))
@@ -54,5 +64,5 @@ if (map_col_aabb(x-sx, y-sy, z-sz, x+sx, y+sy, z+sz))
 		}
 	}
 	
-	instance_destroy(id);
+	instance_destroy(id);*/
 }

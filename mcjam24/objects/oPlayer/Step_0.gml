@@ -8,7 +8,9 @@ var _fwd = keyboard_check(ord("W")) - keyboard_check(ord("S")),
 	_jump = keyboard_check(vk_space) - keyboard_check(vk_control),
 	_grab = mouse_check_button_pressed(mb_right),
 	_yeet = mouse_check_button_pressed(mb_left),
-	_speed = 1,
+	_rat = keyboard_check_pressed(ord("R")),
+	_platform = keyboard_check_pressed(ord("G")),
+	_speed = keyboard_check(vk_shift) ? 2 : 1,
 	;
 
 if (_fwd != 0 || _sid != 0)
@@ -18,8 +20,8 @@ if (_fwd != 0 || _sid != 0)
 	//vz = (groundFwdZ * _fwd + groundSideZ * _sid) * _speed;
 }
 
-if (_jump)
-	vz = _speed * 2;
+if (keyboard_check(vk_space))
+	vz = _jump * _speed * 2;
 
 // Player tile grabbing
 // Raycast & check if theres any tile in range
@@ -64,9 +66,41 @@ if (_yeet && !ds_list_empty(playerHoldingTile) &&
 	snd_play(sndThrow, random_range(0.8, 1.2), 1);
 }
 
+// RAT
+if (_rat)
+{
+	with (instance_create_layer(x, y, "inst", oRat))
+	{
+		z = other.eyeZ;
+		vx = other.aimX * 8;
+		vy = other.aimY * 8;
+		vz = other.aimZ * 8 + 6;
+	}
+	
+	snd_play(sndThrow, random_range(0.8, 1.2), 1);
+}
+
+// PLATFORM
+if (_platform)
+{
+	var _tx = x >> TILE_BIT,
+		_ty = y >> TILE_BIT,
+		_tz = (z-sz-4) >> TILE_BIT;
+	map_edit_set(_tx, _ty, _tz, 1);
+}
+
+// GUY
+if (keyboard_check_pressed(ord("T")))
+{
+	with (instance_create_layer(x, y, "inst", oGuy))
+		z = other.eyeZ;
+	
+	//snd_play(sndThrow, random_range(0.8, 1.2), 1);
+}
+
 // Physics
 // gravity
-if (!grounded)
+if (!grounded && !keyboard_check(vk_space))
 {
 	if (vz > velMaxGrav)
 		vz += velAccGrav;
@@ -111,7 +145,7 @@ if (grounded)
 	groundMoveCtr += point_distance(0,0,vx, vy);
 	if (groundMoveCtr > 16) // footstep
 	{
-		snd_play(sndStep1, random_range(-0.1, 0.1) + 0.5 + groundMoveStep * 0.5, random_range(0.8, 1.0));
+		snd_play(groundMoveStep ? sndStep2 : sndStep1, random_range(-0.1, 0.1) + 1.0, random_range(0.4, 0.6));
 		groundMoveCtr = 0;
 		groundMoveStep ^= 1;
 	}

@@ -40,6 +40,7 @@ while (!ds_queue_empty(renderQueueSolid))
 shader_reset();
 
 // Debug axis helper
+/*
 var _x = -32, _y = -32, _z = 0,
 	_vb = vertex_create_buffer();
 vertex_begin(_vb, global.mapTilemapVF);
@@ -54,3 +55,4 @@ map_vb_add(_vb, _x, _y, _z + TILE_SZ, 0, 0, 0, 0, 0, c_blue, 1);
 vertex_end(_vb);
 vertex_submit(_vb, pr_linelist, -1);
 vertex_delete_buffer(_vb);
+*/

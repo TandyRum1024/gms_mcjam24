@@ -1,6 +1,7 @@
 DINK ISLANDS
 ===
 [![banner](imgs/mj_thumbnail.png)](https://youtu.be/9pHZ_mvbDl0)
+[![banner](imgs/mj_rat_time.gif)](https://youtu.be/9pHZ_mvbDl0)
 (click the image for some short showcase video)
 
 A 13(ish) hour entry for [Minecraft in 24 Hours Jam](https://itch.io/jam/minecraft-in-24-hours)

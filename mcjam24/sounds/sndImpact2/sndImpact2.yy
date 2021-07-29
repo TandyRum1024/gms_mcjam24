@@ -11,7 +11,7 @@
     "path": "audiogroups/audiogroup_default",
   },
   "soundFile": "sndImpact2.wav",
-  "duration": 0.458469,
+  "duration": 0.453469,
   "parent": {
     "name": "GAME",
     "path": "folders/GAME.yy",

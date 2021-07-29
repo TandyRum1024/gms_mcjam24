@@ -56,7 +56,7 @@ function __draw_tile (_x, _y, _sz, _tile)
 // UI
 var _tx = window_get_width() - 16,
 	_ty = 16,
-	_str = "WASD and SPACE to move\nF5 to re-generate the island\nRMB to pick-er-up\nLMB to YEET\nMMXXI ZIK"
+	_str = "WASD and SPACE to move\nTAB to toggle mouselook (" + (global.mouseLock ? "ENABLED" : "DISABLED") + ")\nF5 to re-generate the island\nRMB to pick-er-up\nLMB to YEET\nR for RAT, T for DINK\nG to spawn a block below you\nMMXXI ZIK"
 	;
 draw_set_halign(2); draw_set_valign(0);
 draw_text_color(_tx + 2, _ty + 2, _str, c_black, c_black, c_black, c_black, 1.0);
@@ -98,13 +98,42 @@ if (instance_exists(player))
 }
 
 // Generating indicator
-if (generateRequest >= 0)
+if (generateRequest != -2)
 {
 	draw_clear(c_black);
 	var _tx = window_get_width() * 0.5,
 		_ty = window_get_height() * 0.5,
 		_str = "GENERATING..."
 		;
+	
 	draw_set_halign(1); draw_set_valign(1);
 	draw_text_transformed_color(_tx, _ty, _str, 4, 4, 0, c_yellow, c_yellow, c_yellow, c_yellow, 1.0);
+	
+	// Progress
+	switch (generateRequest)
+	{
+		default:
+			break;
+		case 0: // worldgen
+			_ty = window_get_height() * 0.75;
+			draw_set_halign(1); draw_set_valign(1);
+			draw_text_transformed_color(_tx, _ty, "Generating world...", 4, 4, 0, c_gray, c_gray, c_gray, c_gray, 1.0);
+			break;
+		case -1: // chunk update
+			_ty = window_get_height() * 0.75;
+			draw_set_halign(1); draw_set_valign(1);
+			draw_text_transformed_color(_tx, _ty, "Generating mesh...", 4, 4, 0, c_gray, c_gray, c_gray, c_gray, 1.0);
+			
+			_ty += 128;
+			var _max_tiles = (global.mapSize[0] * global.mapSize[1] * global.mapSize[2]),
+				_current_tiles = generateMeshProgress,
+				_bar_wid = window_get_width() * 0.5,
+				;
+			// progress bar
+			draw_rectangle_color(_tx - _bar_wid * 0.5, _ty - 32, _tx + _bar_wid * 0.5, _ty + 32, c_gray, c_gray, c_gray, c_gray, false);
+			draw_rectangle_color(_tx - _bar_wid * 0.5, _ty - 32, _tx - _bar_wid * 0.5 + (_bar_wid * _current_tiles/_max_tiles), _ty + 32, c_white, c_white, c_white, c_white, false);
+			// text
+			draw_text_transformed_color(_tx, _ty, string(_current_tiles) + "/" + string(_max_tiles), 4, 4, 0, c_black, c_black, c_black, c_black, 1.0);
+			break;
+	}
 }

@@ -11,7 +11,7 @@
     "path": "audiogroups/audiogroup_default",
   },
   "soundFile": "sndMine.wav",
-  "duration": 0.148515,
+  "duration": 0.143515,
   "parent": {
     "name": "GAME",
     "path": "folders/GAME.yy",

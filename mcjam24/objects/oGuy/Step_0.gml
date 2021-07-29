@@ -30,36 +30,12 @@ with (oBlock)
 		other.z >= _z1 && other.z <= _z2
 		)
 	{
-		// ded
-		snd_play_at(choose(sndImpact1, sndImpact2), random_range(0.9, 1.1), 1.0, x, y, z);
-		
-		repeat (irandom_range(2, 4))
+		with (other)
 		{
-			with (instance_create_layer(x,y,"inst", oParticle))
-			{
-				z = other.z;
-		
-				vx = random_range(-4, 4);
-				vy = random_range(-4, 4);
-				vz = random_range(-4, 4);
-		
-				sprite_index = sprParticleTrail;
-				image_blend = make_color_hsv(0, 0, random_range(200, 255));
-				image_speed = 0.5;
-				image_xscale = 4;
-				image_yscale = 4;
-			}
+			var _ox = other.x, _oy = other.y, _oz = other.z,
+			_vx = other.vx * 1.5, _vy = other.vy * 1.5, _vz = max(other.vz, 0) + 2;
+			instance_destroy(other);
+			die(_vx, _vy, _vz, _ox, _oy, _oz);
 		}
-		
-		with (instance_create_layer(x,y,"inst", oDeadguy))
-		{
-			z = other.z;
-			vx = other.vx;
-			vy = other.vy;
-			vz = max(other.vz, 0) + 4;
-		}
-		
-		instance_destroy(other);
-		instance_destroy(id);
 	}
 }

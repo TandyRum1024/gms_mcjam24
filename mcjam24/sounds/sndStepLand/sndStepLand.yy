@@ -11,7 +11,7 @@
     "path": "audiogroups/audiogroup_default",
   },
   "soundFile": "sndStepLand.wav",
-  "duration": 0.186179,
+  "duration": 0.181179,
   "parent": {
     "name": "GAME",
     "path": "folders/GAME.yy",

@@ -11,7 +11,7 @@
     "path": "audiogroups/audiogroup_default",
   },
   "soundFile": "sndPlace.wav",
-  "duration": 0.367698,
+  "duration": 0.362698,
   "parent": {
     "name": "GAME",
     "path": "folders/GAME.yy",
